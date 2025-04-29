@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node api/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
     "pg-hstore": "^2.3.4",
     "prisma": "5.9.1",
     "sequelize": "^6.37.7",
+    "serverless-http": "^3.2.0",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {

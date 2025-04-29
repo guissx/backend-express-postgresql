@@ -1,9 +1,10 @@
 import express, { Application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { connectSequelize } from "./config/db";
-import UsersRouters from "./routes/UsersRoutes";
-import AuthRoutes from "./routes/AuthRoutes"
+import { connectSequelize } from "../src/config/db";
+import UsersRouters from "../src/routes/UsersRoutes";
+import AuthRoutes from "../src/routes/AuthRoutes"
+import serverless from "serverless-http";
 
 
 dotenv.config();
@@ -26,3 +27,5 @@ app.use("/auth", AuthRoutes);
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+export default serverless(app); 
