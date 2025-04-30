@@ -3,12 +3,13 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectSequelize } from "../src/config/db";
 import UsersRouters from "../src/routes/UsersRoutes";
-import AuthRoutes from "../src/routes/AuthRoutes";
-import serverless from "serverless-http";
+import AuthRoutes from "../src/routes/AuthRoutes"
+
+
 
 dotenv.config();
-
 const app: Application = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -20,13 +21,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/users", UsersRouters);
-app.use("/api/auth", AuthRoutes);
+app.use("/users", UsersRouters);
+app.use("/auth", AuthRoutes);
 
-// Remover isso:
-// app.listen(PORT, () => {
-//   console.log(`Servidor rodando na porta ${PORT}`);
-// });
+app.listen(process.env.PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
 
-// ✅ Exportar como função para o Vercel
-export const handler = serverless(app);
+

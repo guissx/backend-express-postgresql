@@ -41,6 +41,26 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 // CREATE USER
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
+  const validateEmail = (email: string): boolean => email.includes('@');
+
+  const validatePassword = (password: string): boolean => {
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasLength = password.length >= 8;
+    return hasUpper && hasLower && hasLength;
+  };
+
+  if (!validateEmail(email)) {
+    res.status(400).json({ message: "Email inválido. Deve conter '@'" });
+    return;
+  }
+
+  if (!validatePassword(password)) {
+    res.status(400).json({
+      message: "A senha deve conter pelo menos 8 caracteres, uma letra maiúscula e uma minúscula."
+    });
+    return;
+  }
 
   try {
     const existingUser = await User.findOne({ where: { email } });
