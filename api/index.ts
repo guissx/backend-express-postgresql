@@ -14,7 +14,7 @@ app.use(express.json());
 connectSequelize();
 
 app.use("/users", UsersRouters);
-app.use("/auth", AuthRoutes);
+app.use("/auth", AuthRoutes);''
 
 app.listen(process.env.PORT);
 
