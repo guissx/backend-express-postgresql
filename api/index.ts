@@ -1,4 +1,21 @@
-import serverlessExpress from "@vendia/serverless-express";
-import app from "../src/app";
+import express, { Application } from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { connectSequelize } from "../src/config/db";
+import UsersRouters from "../src/routes/UsersRoutes";
+import AuthRoutes from "../src/routes/AuthRoutes"
 
-export const handler = serverlessExpress({ app });
+dotenv.config();
+const app: Application = express();
+
+app.use(cors());
+app.use(express.json());
+
+connectSequelize();
+
+app.use("/users", UsersRouters);
+app.use("/auth", AuthRoutes);
+
+app.listen(process.env.PORT);
+
+
