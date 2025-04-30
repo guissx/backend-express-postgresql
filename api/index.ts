@@ -5,8 +5,6 @@ import { connectSequelize } from "../src/config/db";
 import UsersRouters from "../src/routes/UsersRoutes";
 import AuthRoutes from "../src/routes/AuthRoutes"
 
-
-
 dotenv.config();
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
