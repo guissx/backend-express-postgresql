@@ -82,7 +82,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt
     };
-
+    console.log("Usuário criado com sucesso:", userResponse);
     res.status(201).json(userResponse);
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
