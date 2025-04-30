@@ -1,39 +1,45 @@
-import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
+import { Sequelize } from 'sequelize';
+import pg from 'pg';
 
-dotenv.config();
-
-export const sequelize = new Sequelize(process.env.DATABASE_URL!, {
+// Configuração para o Neon
+const sequelize = new Sequelize(process.env.DATABASE_URL!, {
   dialect: 'postgres',
+  dialectModule: pg, // Usa o driver pg diretamente
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
-  define: {
-    timestamps: true,
-    underscored: true,
-  },
   dialectOptions: {
-    ssl: process.env.NODE_ENV === 'production' ? {
+    ssl: {
       require: true,
       rejectUnauthorized: false
-    } : false
+    }
+  },
+  pool: {
+    max: 3, // Conexões simultâneas (adequado para plano gratuito)
+    min: 0,
+    idle: 10000,
+    acquire: 30000,
+    evict: 10000 // Remove conexões ociosas
+  },
+  retry: {
+    max: 3, // Tentativas de reconexão
+    match: [/timeout/i, /ECONNRESET/]
   }
 });
 
-export const connectSequelize = async (): Promise<void> => {
+// Teste de conexão inicial
+export const initializeDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ PostgreSQL conectado com sucesso!");
+    console.log('✅ Conexão com Neon estabelecida');
     
-    // Sincroniza modelos (opcional - cuidado em produção)
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true });
+      console.log('🔄 Modelos sincronizados (alter)');
     }
   } catch (error) {
-    console.error("❌ Erro ao conectar com o PostgreSQL:", error);
+    console.error('❌ Falha na inicialização do banco:', error);
     process.exit(1);
   }
 };
 
-// Encerramento limpo
-process.on("exit", () => {
-  sequelize.close();
-});
+
+export { sequelize };
