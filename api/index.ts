@@ -1,21 +1,25 @@
-import express, { Application } from "express";
+import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { connectSequelize } from "../src/config/db";
 import UsersRouters from "../src/routes/UsersRoutes";
-import AuthRoutes from "../src/routes/AuthRoutes"
+import AuthRoutes from "../src/routes/AuthRoutes";
 
-dotenv.config();
-const app: Application = express();
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-connectSequelize();
+app.use(async (req, res, next) => {
+  try {
+    await connectSequelize();
+    next();
+  } catch (error) {
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
 
 app.use("/users", UsersRouters);
-app.use("/auth", AuthRoutes);''
-
-app.listen(process.env.PORT);
+app.use("/auth", AuthRoutes);
 
 
+export default app;
