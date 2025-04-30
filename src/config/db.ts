@@ -1,48 +1,46 @@
 import { Sequelize } from 'sequelize';
 import pg from 'pg';
 
+// Configuração para o Neon
 const sequelize = new Sequelize(process.env.DATABASE_URL!, {
   dialect: 'postgres',
-  dialectModule: pg,
-  logging: console.log, // Ative para ver todas as queries
+  dialectModule: pg, // Usa o driver pg diretamente
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
   dialectOptions: {
     ssl: {
       require: true,
       rejectUnauthorized: false
-    },
-    application_name: 'your-app-name' // Identificador no Neon
+    }
   },
   pool: {
-    max: 3,
+    max: 3, // Conexões simultâneas (adequado para plano gratuito)
     min: 0,
+    idle: 10000,
     acquire: 30000,
-    idle: 10000
+    evict: 10000 // Remove conexões ociosas
   },
   retry: {
-    max: 3,
-    match: [
-      /ECONNRESET/,
-      /SequelizeConnectionError/,
-      /Connection terminated unexpectedly/
-    ]
+    max: 3, // Tentativas de reconexão
+    match: [/timeout/i, /ECONNRESET/]
   }
 });
 
-// Teste de conexão agressivo
-sequelize.authenticate()
-  .then(() => console.log('✅ Conexão estabelecida com sucesso'))
-  .catch(err => {
-    console.error('❌ Falha catastrófica na conexão:', err);
+// Teste de conexão inicial
+export const initializeDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ Conexão com Neon estabelecida');
+    
+    if (process.env.NODE_ENV === 'development') {
+      await sequelize.sync({ alter: true });
+      console.log('🔄 Modelos sincronizados (alter)');
+    }
+  } catch (error) {
+    console.error('❌ Falha na inicialização do banco:', error);
     process.exit(1);
-  });
+  }
+};
 
-// Monitoramento de eventos
-sequelize.addHook('afterConnect', (connection) => {
-  console.log('Nova conexão estabelecida');
-});
 
-sequelize.addHook('afterDisconnect', (connection) => {
-  console.warn('Conexão perdida!');
-});
 
 export { sequelize };
