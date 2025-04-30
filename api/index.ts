@@ -16,16 +16,9 @@ app.use(express.json());
 
 connectSequelize();
 
-app.use((req, res, next) => {
-  console.log(`Request recebido: ${req.method} ${req.url}`);
-  next();
-});
-
 app.use("/users", UsersRouters);
 app.use("/auth", AuthRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+app.listen(process.env.PORT);
 
 
