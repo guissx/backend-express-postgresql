@@ -19,5 +19,4 @@ initializeDB();
 app.use("/users", UsersRouters);
 app.use("/auth", AuthRoutes);
 
-// Export para Vercel (REMOVA o app.listen!)
-export default app;
+app.listen(process.env.PORT);
