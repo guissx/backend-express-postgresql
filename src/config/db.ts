@@ -31,10 +31,8 @@ export const initializeDB = async () => {
     await sequelize.authenticate();
     console.log('✅ Conexão com Neon estabelecida');
     
-    if (process.env.NODE_ENV === 'development') {
-      if (process.env.NODE_ENV === 'development') {
-  await sequelize.sync({ alter: true });
-}
+   await sequelize.sync({ alter: true });
+
       console.log('🔄 Modelos sincronizados (alter)');
     }
   } catch (error) {
